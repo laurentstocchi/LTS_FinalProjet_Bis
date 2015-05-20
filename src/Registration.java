@@ -1,5 +1,11 @@
 import java.util.Date;
 
+//Cette classe permet de créer un enregistrement d'une voiture dans une section donnée.
+//Un enregistrement a pour attribut :
+//	- le nom de la plaque de la voiture enregistrée
+//	- le nom de la section dans laquelle l'enregistrement a eu lieux
+//	- la date de l'enregistrement
+
 public class Registration implements Comparable<Registration> {
 
 	private String plate;

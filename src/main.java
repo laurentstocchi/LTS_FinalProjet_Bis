@@ -27,7 +27,7 @@ public class main {
 	static String [] carTypes = {"car","car","car","car","car","truck","truck","motorcycle","police"};
 	static String [] lesSections = {"A10","A11","A12","A13","A14","A15"};
 	static char [] arrayLetter = {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'};
-	
+	//Alphabet pour tirer au sort des lettres pour création automatique et aléatoire des plaques des véhicules
 	
 	//Création des sections en premier, elles ne seront pas répertoriées dans une Collection ou un HashMap 
 	// car l'ensemble complet des sections est connue à l'avance par le système, il n'y aura aucune possibilité
@@ -38,10 +38,16 @@ public class main {
 	static Section sectionA13 = new Section("A13","Luxembourg","Metz",6);
 	static Section sectionA14 = new Section("A14","Luxembourg","Trier",4);
 	static Section sectionA15 = new Section("A15","Luxembourg","Arlon",5);
-	
 
+	//On choisit une Collection pour stocker les registrations afin de pouvoir effectuer des 
+	//requêtes différentes sur cette collection via la fonction private static <E, T> void process
 	public static Collection<Registration> registrations = new ArrayList<Registration>();
+	
+	//On choisit un HashMap pour stocker les voitures afin d'éviter les doublons
 	private static HashMap<String,Car> vehicles = new HashMap<String,Car>();
+	
+	//On choisit un HashMap pour stocker les password et login afin de vérifier facilement 
+	//la concordence entre les clés et les valeurs pour pouvoir se connecter
 	private static HashMap<String,String> passwordLogin = new HashMap<String,String>();
 	
 	private static <E, T> void process(Iterable<E> elements, Predicate<E> predicate, Function<E, T> mapper, Consumer<T> block) {
@@ -54,9 +60,11 @@ public class main {
 		}
 	}
 	
+	//Fonction permettant de facturer une voiture, prend en paramètre l'object Car qu'il faut facturer
 	private static int getPrice(Car car){
 		int price = 0;
 		
+		//si le véhicule a facturer fait partie de la police il ne paye rien.
 		if(car.getType()=="police"){
 			return 0;
 		}
@@ -93,6 +101,7 @@ public class main {
 		return price;
 	}
 
+	//Fonction qui créé une plaque Luxembourgeoise : AA-0000
 	public static String getLuxPlate(){
 		indiceLetter = rand.nextInt(arrayLetter.length);
 		firstLetter = arrayLetter[indiceLetter];
@@ -102,6 +111,7 @@ public class main {
 		return ""+firstLetter+secondLetter+"-"+firstPlateNumber;
 	}
 	
+	//Fonction qui créé une plaque Belge : 0-AAA-000
 	public static String getBelPlate(){
 		firstPlateNumber = rand.nextInt(9 - 0 + 1) + 0;
 		indiceLetter = rand.nextInt(arrayLetter.length);
@@ -114,6 +124,7 @@ public class main {
 		return ""+firstPlateNumber+"-"+firstLetter+secondLetter+thirdLetter+"-"+secondPlateNumber;
 	}
 	
+	//Fonction qui créé une plaque Allemande : AA-AA-0000
 	public static String getAllPlate(){
 		indiceLetter = rand.nextInt(arrayLetter.length);
 		firstLetter = arrayLetter[indiceLetter];
@@ -127,6 +138,7 @@ public class main {
 		return ""+firstLetter+secondLetter+"-"+thirdLetter+fourthLetter+"-"+secondPlateNumber;
 	}
 	
+	//Fonction qui créé une plaque Française : AA-000-AA
 	public static String getFrPlate(){
 		indiceLetter = rand.nextInt(arrayLetter.length);
 		firstLetter = arrayLetter[indiceLetter];
@@ -142,6 +154,8 @@ public class main {
 	
 	public static void main(String[] args) {
 		java.util.Scanner entree =   new java.util.Scanner(System.in);
+		
+		//ajout des password/login acceptés par le système
 		passwordLogin.put("1234","lstocchi");
 		passwordLogin.put("4321","imendoza");
 		
@@ -151,6 +165,7 @@ public class main {
 		int i = 0;
 		int menuChoice = 0;
 		
+		//boucle do { }while() tant que l'utilisateur n'ai pas connecté
 		do{
 			
 			System.out.println("Login :");
@@ -179,6 +194,7 @@ public class main {
 		
 		}while(index==0);
 		
+		
 		//Ici l'utilisateur est connecté
 		try {
 			System.out.println();
@@ -188,138 +204,19 @@ public class main {
 		}
 		System.out.println();
 		
-		//On insere dans le systeme 100 valeurs sans les afficher à l'écran
-		for(i=0;i<100;i++){
-			indiceType = rand.nextInt(carTypes.length);
-			theType = carTypes[indiceType];
-			
-			if(theType=="police"){
-				compteurPolice+=1;
-				formatPlate = 1;
-			}else {
-				formatPlate = rand.nextInt(4 - 1 + 1)+ 1;
-			}
-			
-			switch(formatPlate){
-			case 1 : 
-				compteurLux++;
-				plate=getLuxPlate();
-				break;
-			case 2 : 
-				compteurBel++;
-				plate=getBelPlate();
-				break;
-			case 3 :
-				compteurAll++;
-				plate=getAllPlate();
-				break;
-			case 4 : 
-				compteurFR++;
-				plate=getFrPlate();
-				break;
-			default : 
-				compteurLux++;
-				plate=getLuxPlate();
-				break;
-			}
-			
-			indiceSections = rand.nextInt(lesSections.length);
-			theSection = lesSections[indiceSections];
-			year = rand.nextInt(115 - 100 + 1) + 100;
-			month = rand.nextInt(11 - 0 + 1) + 0;
-			day = rand.nextInt(30 - 0 + 1) + 0;
-			
-			Registration car = new Registration(plate,theSection, new Date(year, month, day));
-			
-			Car vehicle = new Car(plate,theType);
-			
-			vehicles.put(plate,vehicle);
-			
-			registrations.add(car);
-			
-		}
+		//Pour initialiser le système et remplir la database
+		// on insère 100 registrations dans le LTS sans les afficher à l'écran
+		//Pour cela on utilise la fonction initLTS() qui créé automatiquement 100 enregistrements
+		initLTS();
 		
-		//Puis on insere dans le systeme 10 valeurs en les affichant à l'écran
-		for(i=0;i<10;i++){
-			
-			indiceType = rand.nextInt(carTypes.length);
-			theType = carTypes[indiceType];
-			
-			if(theType=="police"){
-				compteurPolice+=1;
-				formatPlate = 1;
-			}else {
-				formatPlate = rand.nextInt(4 - 1 + 1)+ 1;
-			}
-			
-			switch(formatPlate){
-			case 1 : 
-				compteurLux++;
-				plate=getLuxPlate();
-				break;
-			case 2 : 
-				compteurBel++;
-				plate=getBelPlate();
-				break;
-			case 3 :
-				compteurAll++;
-				plate=getAllPlate();
-				break;
-			case 4 : 
-				compteurFR++;
-				plate=getFrPlate();
-				break;
-			default : 
-				compteurLux++;
-				plate=getLuxPlate();
-				break;
-			}
-			
-			indiceSections = rand.nextInt(lesSections.length);
-			theSection = lesSections[indiceSections];
-			year = rand.nextInt(115 - 100 + 1) + 100;
-			month = rand.nextInt(11 - 0 + 1) + 0;
-			day = rand.nextInt(30 - 0 + 1) + 0;
-			
-			Registration car = new Registration(plate,theSection, new Date(year, month, day));
-			
-			Car vehicle = new Car(plate,theType);
-			
-			if(vehicles.containsKey(plate)){
-				System.out.println("This vehicle is already registered in the system, no duplication allowed.");
-			}
-			
-			vehicles.put(plate,vehicle);
-			
-			registrations.add(car);
-			
-			System.out.println("--> Registration in section "+theSection+".");
-			System.out.println("Plate number: "+plate+".");
-			
-
-			if(i%3==0){
-				try {
-					System.out.println();
-					Thread.sleep(2000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-			if(i%4==0){
-				try {
-					System.out.println();
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-			
-		}
-		
-		//le menu commence ici
+		//Puis on en insere 10 nouvelles en les affichant à l'écran
+		//pour que l'utilisateur voit de lui même le système fonctionner
+		displayRegistrations(10);
 		
 		System.out.println();
 		
+		//une fois les valeurs insérées dans le système, 
+		//le menu avec les différentes requêtes peut s'afficher
 		do{
 			System.out.println();
 			menuChoice = 0;
@@ -411,80 +308,8 @@ public class main {
 				System.out.println();
 				break;
 			case 8 :
-				for(i=0;i<30;i++){
-					indiceType = rand.nextInt(carTypes.length);
-					theType = carTypes[indiceType];
-					
-					if(theType=="police"){
-						compteurPolice+=1;
-						formatPlate = 1;
-					}else {
-						formatPlate = rand.nextInt(4 - 1 + 1)+ 1;
-					}
-					
-					switch(formatPlate){
-					case 1 : 
-						compteurLux++;
-						plate=getLuxPlate();
-						break;
-					case 2 : 
-						compteurBel++;
-						plate=getBelPlate();
-						break;
-					case 3 :
-						compteurAll++;
-						plate=getAllPlate();
-						break;
-					case 4 : 
-						compteurFR++;
-						plate=getFrPlate();
-						break;
-					default : 
-						compteurLux++;
-						plate=getLuxPlate();
-						break;
-					}
-					
-					indiceSections = rand.nextInt(lesSections.length);
-					theSection = lesSections[indiceSections];
-					year = rand.nextInt(115 - 100 + 1) + 100;
-					month = rand.nextInt(11 - 0 + 1) + 0;
-					day = rand.nextInt(30 - 0 + 1) + 0;
-					
-					Registration car = new Registration(plate,theSection, new Date(year, month, day));
-					
-					Car vehicle = new Car(plate,theType);
-					
-					if(vehicles.containsKey(plate)){
-						System.out.println("This vehicle is already registered in the system, no duplication allowed.");
-					}
-					
-					vehicles.put(plate,vehicle);
-					
-					registrations.add(car);
-					
-					System.out.println("--> Registration in section "+theSection+".");
-					System.out.println("Plate number: "+plate+".");
-					
-
-					if(i%3==0){
-						try {
-							System.out.println();
-							Thread.sleep(2000);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-					}
-					if(i%4==0){
-						try {
-							System.out.println();
-							Thread.sleep(1000);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-					}
-					
-				}
+				//On affiche ici 30 nouvelles registrations avant de revenir au menu principal
+				displayRegistrations(30);
 				break;
 			case 9 :
 				System.out.println("Enter a section's name..");
@@ -544,6 +369,144 @@ public class main {
 			
 		}while(menuChoice!=12);
 		
+	}
+	
+	//Fonction qui affiche les registrations dans le système LTS
+	//qui prend en paramètre le nombre de registrations que l'on veut afficher
+	public static void displayRegistrations(int numberOfRegistrations){
+		int i = 0;
+		
+			for(i=0;i<numberOfRegistrations;i++){
+			
+			indiceType = rand.nextInt(carTypes.length);
+			theType = carTypes[indiceType];
+			
+			if(theType=="police"){
+				compteurPolice+=1;
+				formatPlate = 1;
+			}else {
+				formatPlate = rand.nextInt(4 - 1 + 1)+ 1;
+			}
+			
+			switch(formatPlate){
+			case 1 : 
+				compteurLux++;
+				plate=getLuxPlate();
+				break;
+			case 2 : 
+				compteurBel++;
+				plate=getBelPlate();
+				break;
+			case 3 :
+				compteurAll++;
+				plate=getAllPlate();
+				break;
+			case 4 : 
+				compteurFR++;
+				plate=getFrPlate();
+				break;
+			default : 
+				compteurLux++;
+				plate=getLuxPlate();
+				break;
+			}
+			
+			indiceSections = rand.nextInt(lesSections.length);
+			theSection = lesSections[indiceSections];
+			year = rand.nextInt(115 - 100 + 1) + 100;
+			month = rand.nextInt(11 - 0 + 1) + 0;
+			day = rand.nextInt(30 - 0 + 1) + 0;
+			
+			Registration car = new Registration(plate,theSection, new Date(year, month, day));
+			
+			Car vehicle = new Car(plate,theType);
+			
+			if(vehicles.containsKey(plate)){
+				System.out.println("This vehicle is already registered in the system, no duplication allowed.");
+			}
+			
+			vehicles.put(plate,vehicle);
+			
+			registrations.add(car);
+			
+			System.out.println("--> Registration in section "+theSection+".");
+			System.out.println("Plate number: "+plate+".");
+			
+
+			if(i%3==0){
+				try {
+					System.out.println();
+					Thread.sleep(2000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			if(i%4==0){
+				try {
+					System.out.println();
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+			
+		}
+	}
+	
+	//Fonction qui initialise le système
+	//cette fonction créé 100 enregistrements dans le système
+	//sans les afficher à l'utilisateur
+	public static void initLTS(){
+		int i = 0;
+		for(i=0;i<100;i++){
+			indiceType = rand.nextInt(carTypes.length);
+			theType = carTypes[indiceType];
+			
+			if(theType=="police"){
+				compteurPolice+=1;
+				formatPlate = 1;
+			}else {
+				formatPlate = rand.nextInt(4 - 1 + 1)+ 1;
+			}
+			
+			switch(formatPlate){
+			case 1 : 
+				compteurLux++;
+				plate=getLuxPlate();
+				break;
+			case 2 : 
+				compteurBel++;
+				plate=getBelPlate();
+				break;
+			case 3 :
+				compteurAll++;
+				plate=getAllPlate();
+				break;
+			case 4 : 
+				compteurFR++;
+				plate=getFrPlate();
+				break;
+			default : 
+				compteurLux++;
+				plate=getLuxPlate();
+				break;
+			}
+			
+			indiceSections = rand.nextInt(lesSections.length);
+			theSection = lesSections[indiceSections];
+			year = rand.nextInt(115 - 100 + 1) + 100;
+			month = rand.nextInt(11 - 0 + 1) + 0;
+			day = rand.nextInt(30 - 0 + 1) + 0;
+			
+			Registration car = new Registration(plate,theSection, new Date(year, month, day));
+			
+			Car vehicle = new Car(plate,theType);
+			
+			vehicles.put(plate,vehicle);
+			
+			registrations.add(car);
+			
+		}
 	}
 
 }
