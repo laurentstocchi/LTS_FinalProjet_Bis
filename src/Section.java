@@ -1,3 +1,10 @@
+//Cette classe permet de créer une section.
+//Une section a pour attribut :
+//	- un nom de section, cet attribut est unique pour chaque section, il sert de primary key.
+//	- un point de départ
+//	- un point d'arrivé
+//	- un prix, chaque voiture entrant dans cette section sera facturée de ce prix.
+
 public class Section{
 
 	private String section;
@@ -5,6 +12,7 @@ public class Section{
 	private String exitPoint;
 	private int price;
 	
+	//Constructeur de la classe Section
 	public Section(String section,String entryPoint, String exitPoint, int price) {
 		this.section = section;
 		this.entryPoint = entryPoint;

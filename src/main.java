@@ -22,13 +22,16 @@ public class main {
 	static int compteurLux = 0;
 	static int compteurBel = 0;
 	static int compteurAll = 0;
+	static int compteurPolice = 0;
 	static String theSection;
-	static String [] carTypes = {"car","car","car","truck","motorcycle"};
+	static String [] carTypes = {"car","car","car","car","car","truck","truck","motorcycle","police"};
 	static String [] lesSections = {"A10","A11","A12","A13","A14","A15"};
 	static char [] arrayLetter = {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'};
 	
 	
-	//on créé les sections en premier
+	//Création des sections en premier, elles ne seront pas répertoriées dans une Collection ou un HashMap 
+	// car l'ensemble complet des sections est connue à l'avance par le système, il n'y aura aucune possibilité
+	// d'en rajouter d'autres pendant l'exécution du logiciel.
 	static Section sectionA10 = new Section("A10","Esch","Luxembourg",3);
 	static Section sectionA11 = new Section("A11","Esch","Rodange",2);
 	static Section sectionA12 = new Section("A12","Wiltz","Luxembourg",2);
@@ -54,32 +57,37 @@ public class main {
 	private static int getPrice(Car car){
 		int price = 0;
 		
-		for (Registration r : registrations) {
-			 if(r.getPlate()==car.getPlate()){
-				 switch(r.getSection()){
-				 case "A10" :
-					 price+=sectionA10.getPrice();
-					 break;
-				 case "A11" :
-					 price+=sectionA11.getPrice();
-					 break;
-				 case "A12" :
-					 price+=sectionA12.getPrice();
-					 break;
-				 case "A13" :
-					 price+=sectionA13.getPrice();
-					 break;
-				 case "A14" :
-					 price+=sectionA14.getPrice();
-					 break;
-				 case "A15" :
-					 price+=sectionA15.getPrice();
-					 break;
-				 default : 
-					 price = 0;
-					 break;
+		if(car.getType()=="police"){
+			return 0;
+		}
+		else {
+			for (Registration r : registrations) {
+				 if(r.getPlate()==car.getPlate()){
+					 switch(r.getSection()){
+					 case "A10" :
+						 price+=sectionA10.getPrice();
+						 break;
+					 case "A11" :
+						 price+=sectionA11.getPrice();
+						 break;
+					 case "A12" :
+						 price+=sectionA12.getPrice();
+						 break;
+					 case "A13" :
+						 price+=sectionA13.getPrice();
+						 break;
+					 case "A14" :
+						 price+=sectionA14.getPrice();
+						 break;
+					 case "A15" :
+						 price+=sectionA15.getPrice();
+						 break;
+					 default : 
+						 price = 0;
+						 break;
+					 }
 				 }
-			 }
+			}
 		}
 		
 		return price;
@@ -182,7 +190,16 @@ public class main {
 		
 		//On insere dans le systeme 100 valeurs sans les afficher à l'écran
 		for(i=0;i<100;i++){
-			formatPlate = rand.nextInt(4 - 1 + 1)+ 1;
+			indiceType = rand.nextInt(carTypes.length);
+			theType = carTypes[indiceType];
+			
+			if(theType=="police"){
+				compteurPolice+=1;
+				formatPlate = 1;
+			}else {
+				formatPlate = rand.nextInt(4 - 1 + 1)+ 1;
+			}
+			
 			switch(formatPlate){
 			case 1 : 
 				compteurLux++;
@@ -213,9 +230,6 @@ public class main {
 			day = rand.nextInt(30 - 0 + 1) + 0;
 			
 			Registration car = new Registration(plate,theSection, new Date(year, month, day));
-			
-			indiceType = rand.nextInt(carTypes.length);
-			theType = carTypes[indiceType];
 			
 			Car vehicle = new Car(plate,theType);
 			
@@ -223,13 +237,21 @@ public class main {
 			
 			registrations.add(car);
 			
-			
-			
 		}
 		
 		//Puis on insere dans le systeme 10 valeurs en les affichant à l'écran
 		for(i=0;i<10;i++){
-			formatPlate = rand.nextInt(4 - 1 + 1)+ 1;
+			
+			indiceType = rand.nextInt(carTypes.length);
+			theType = carTypes[indiceType];
+			
+			if(theType=="police"){
+				compteurPolice+=1;
+				formatPlate = 1;
+			}else {
+				formatPlate = rand.nextInt(4 - 1 + 1)+ 1;
+			}
+			
 			switch(formatPlate){
 			case 1 : 
 				compteurLux++;
@@ -260,9 +282,6 @@ public class main {
 			day = rand.nextInt(30 - 0 + 1) + 0;
 			
 			Registration car = new Registration(plate,theSection, new Date(year, month, day));
-			
-			indiceType = rand.nextInt(carTypes.length);
-			theType = carTypes[indiceType];
 			
 			Car vehicle = new Car(plate,theType);
 			
@@ -317,7 +336,8 @@ public class main {
 			System.out.println("8. Continue to observe the registration to the system");
 			System.out.println("9. Display informations about a section");
 			System.out.println("10. Display all the sections");
-			System.out.println("11. Log out");
+			System.out.println("11. Display all the police and rescue workers");
+			System.out.println("12. Log out");
 			System.out.println();
 			System.out.println("----------------Luxembourg_Toll_System----------------");
 			
@@ -372,14 +392,36 @@ public class main {
 				break;
 			case 7 :
 				int compteurTotal=compteurFR+compteurLux+compteurBel+compteurAll;
-				System.out.println("Fr : "+compteurFR+" ==> "+(100*compteurFR)/compteurTotal+" %");
-				System.out.println("Lux : "+compteurLux+" ==> "+(100*compteurLux)/compteurTotal+" %");
-				System.out.println("Bel : "+compteurBel+" ==> "+(100*compteurBel)/compteurTotal+" %");
-				System.out.println("All : "+compteurAll+" ==> "+(100*compteurAll)/compteurTotal+" %");
+				double pourcentage;
+				pourcentage = (100*compteurFR)/compteurTotal;
+				System.out.println("Fr : "+compteurFR+" ==> "+pourcentage+" %");
+				pourcentage = (100*compteurLux)/compteurTotal;
+				System.out.println("Lux : "+compteurLux+" ==> "+pourcentage+" %");
+				pourcentage = (100*compteurBel)/compteurTotal;
+				System.out.println("Bel : "+compteurBel+" ==> "+pourcentage+" %");
+				pourcentage = (100*compteurAll)/compteurTotal;
+				System.out.println("All : "+compteurAll+" ==> "+pourcentage+" %");
+				
+				System.out.println();
+				System.out.println("----------------Police and rescue workers----------------");
+				pourcentage = (100*compteurPolice)/compteurTotal;
+				System.out.println("Police : "+compteurPolice+" ==> "+pourcentage+" %");
+				System.out.println("NB : they can only be from Luxembourg.");
+				System.out.println("----------------Police and rescue workers----------------");
+				System.out.println();
 				break;
 			case 8 :
 				for(i=0;i<30;i++){
-					formatPlate = rand.nextInt(4 - 1 + 1)+ 1;
+					indiceType = rand.nextInt(carTypes.length);
+					theType = carTypes[indiceType];
+					
+					if(theType=="police"){
+						compteurPolice+=1;
+						formatPlate = 1;
+					}else {
+						formatPlate = rand.nextInt(4 - 1 + 1)+ 1;
+					}
+					
 					switch(formatPlate){
 					case 1 : 
 						compteurLux++;
@@ -410,9 +452,6 @@ public class main {
 					day = rand.nextInt(30 - 0 + 1) + 0;
 					
 					Registration car = new Registration(plate,theSection, new Date(year, month, day));
-					
-					indiceType = rand.nextInt(carTypes.length);
-					theType = carTypes[indiceType];
 					
 					Car vehicle = new Car(plate,theType);
 					
@@ -482,6 +521,20 @@ public class main {
 				System.out.println(sectionA15.toString());
 				break;
 			case 11 :
+				Iterator carIterator = vehicles.entrySet().iterator();
+				
+				while (carIterator.hasNext()) {
+					Map.Entry entry = (Map.Entry) carIterator.next();
+					String key = (String) entry.getKey();
+					Car value = (Car) entry.getValue();
+					
+					if(value.getType()=="police"){
+						System.out.println("==> "+value.getPlate());
+					}
+			 
+				}
+				break;
+			case 12 :
 				System.out.println("Thank you and see you soon.");
 				break;
 			default :
@@ -489,7 +542,7 @@ public class main {
 				break;
 			}
 			
-		}while(menuChoice!=11);
+		}while(menuChoice!=12);
 		
 	}
 
